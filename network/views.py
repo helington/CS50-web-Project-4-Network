@@ -1,3 +1,5 @@
+import json
+from django.http import JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
@@ -61,3 +63,15 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "network/register.html")
+
+def newPost(request):
+    pass
+
+def allPosts(request):
+    pass
+
+def filteredUsers(request):
+    pass
+
+def userInfo(request):
+    pass
