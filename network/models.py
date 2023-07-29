@@ -5,6 +5,15 @@ from django.db import models
 class User(AbstractUser):
     followers = models.IntegerField(default=0)
 
+    def serialize(self):
+        return {
+            "id": self.id,
+            "username": self.username,
+            "followers": self.followers,
+            "following": len(self.following_list.following.all()),
+            "posts_id's": [post.id for post in self.posts.all()]
+        }
+
 class Post(models.Model):
     author = models.ForeignKey(User, related_name="posts", on_delete=models.CASCADE)
     content = models.CharField(max_length=255)
@@ -13,11 +22,12 @@ class Post(models.Model):
 
     def serialize(self):
         return {
-        "id": {self.id},
-        "author_id": {self.author.id},
-        "content": {self.content},
-        "timestamp": {self.timestamp},
-        "likes": {self.likes}
+        "id": self.id,
+        "author_id": self.author.id,
+        "author_name": self.author.username,
+        "content": self.content,
+        "timestamp": self.timestamp.strftime("%b %d %Y, %I:%M %p"),
+        "likes": self.likes
         }
 
     def __str__(self):
@@ -38,11 +48,11 @@ class Comment(models.Model):
 
     def serialize(self):
         return {
-        "id": {self.id},
-        "author_id": {self.author.id},
-        "post_id": {self.post.id},
-        "content": {self.content},
-        "timestamp": {self.timestamp}
+        "id": self.id,
+        "author_id": self.author.id,
+        "post_id": self.post.id,
+        "content": self.content,
+        "timestamp": self.timestamp
         }
 
     def __str__(self):
@@ -62,11 +72,11 @@ class Post_Feedback(models.Model):
 
     def serialize(self):
         return {
-        "id": {self.id},
-        "user": {self.user.id},
-        "post_id": {self.post.id},
-        "liked": {self.liked},
-        "unliked": {self.unliked}
+        "id": self.id,
+        "user": self.user.id,
+        "post_id": self.post.id,
+        "liked": self.liked,
+        "unliked": self.unliked
         }
 
     def __str__(self):
@@ -84,9 +94,9 @@ class Following_List(models.Model):
 
     def serialize(self):
         return {
-        "id": {self.id},
-        "user": {self.user.id},
-        "following_users_id's": {[user.id for user in self.following.all()]}
+        "id": self.id,
+        "user": self.user.id,
+        "following_users_id's": [user.id for user in self.following.all()]
         }
 
     def __str__(self):
